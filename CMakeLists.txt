@@ -1,0 +1,144 @@
+cmake_minimum_required (VERSION 3.4)
+
+project (WEMediaExtensions)
+math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
+
+if(CMAKE_CONFIGURATION_TYPES)      
+	set(CMAKE_CONFIGURATION_TYPES Debug Release)
+endif()
+project ("WEMediaExtensions${BITS}")
+
+# Configure global paths
+
+# Options
+set(OP_SFML2_LIB_X32 "" CACHE STRING "Path to SFML 2 x86 static libraries")
+set(OP_SFML2_LIB_X64 "" CACHE STRING "Path to SFML 2 x64 static libraries")
+set(OP_SFML2_EXTERNAL_LIB_X32 "" CACHE STRING "Path to SFML 2 x86 external libraries")
+set(OP_SFML2_EXTERNAL_LIB_X64 "" CACHE STRING "Path to SFML 2 x64 external libraries")
+
+set(OP_SFML2_INC "" CACHE STRING "Path to SFML 2 include files")
+
+set(OP_MPG123_LIB_X32 "" CACHE STRING "Path to mpg123 x86 static libraries")
+set(OP_MPG123_LIB_X64 "" CACHE STRING "Path to mpg123 x64 static libraries")
+
+set(OP_MPG123_INC "" CACHE STRING "Path to mpg123 include files")
+
+set(OP_BINARY_OUTPUT_DIRECTORY "" CACHE STRING "Output directory (wallpaper_engine/bin)")
+
+# Derived options, do not edit
+set(OP_SFML2_LIB "${OP_SFML2_LIB_X${BITS}}")
+set(OP_SFML2_EXTERNAL_LIB "${OP_SFML2_EXTERNAL_LIB_X${BITS}}")
+set(OP_MPG123_LIB "${OP_MPG123_LIB_X${BITS}}")
+
+# Precompiled headers
+MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)
+  IF(MSVC)
+    GET_FILENAME_COMPONENT(PrecompiledBasename ${PrecompiledHeader} NAME_WE)
+    SET(PrecompiledBinary "${CMAKE_CURRENT_BINARY_DIR}/${PrecompiledBasename}.pch")
+    #SET(Sources ${${SourcesVar}})
+
+	IF(${SourcesVar})
+		#SET(Sources ${SourcesVar})
+		#SET(Sources "a" "b")
+		LIST(APPEND Sources ${${SourcesVar}})
+		#MESSAGE( STATUS ${Sources} )
+		LIST(FILTER Sources INCLUDE REGEX cpp$)
+		#MESSAGE( STATUS ${${Sources}} )
+		SET(Sources ${Sources})
+		SET_SOURCE_FILES_PROPERTIES(${Sources}
+                                PROPERTIES COMPILE_FLAGS "/Yu\"${PrecompiledHeader}\" /FI\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_DEPENDS "${PrecompiledBinary}")
+		#MESSAGE( STATUS ${Sources} )
+	ENDIF()
+
+    SET_SOURCE_FILES_PROPERTIES(${PrecompiledSource}
+                                PROPERTIES COMPILE_FLAGS "/Yc\"${PrecompiledHeader}\" /Fp\"${PrecompiledBinary}\""
+                                           OBJECT_OUTPUTS "${PrecompiledBinary}")
+
+    # Add precompiled header to SourcesVar
+    LIST(APPEND ${SourcesVar} ${PrecompiledSource})
+  ENDIF()
+ENDMACRO()
+
+# Visual Studio filters
+FUNCTION(ADD_SOURCE_DIRS SourcesVar)
+	#foreach(source IN LISTS ${SourcesVar})
+	#	MESSAGE( STATUS ${source} )
+	#endforeach()
+	foreach(source IN LISTS ${SourcesVar})
+		get_filename_component(source_path "${source}" PATH)
+		
+		if (source_path STREQUAL "")
+		else (source_path STREQUAL "")
+		string(FIND ${source_path} "include" foundInclude REVERSE)
+		string(FIND ${source_path} "src" foundSrc REVERSE)
+		string(FIND ${source_path} "thirdparty" foundThirdparty)
+		if (foundInclude GREATER 0)
+			string(SUBSTRING ${source_path} ${foundInclude} -1 source_path)
+		endif ()
+		if (foundSrc GREATER 0)
+			string(SUBSTRING ${source_path} ${foundSrc} -1 source_path)
+		endif ()
+		if (foundThirdparty GREATER 0)
+			string(SUBSTRING ${source_path} ${foundThirdparty} -1 source_path)
+		endif ()
+		
+		string(REPLACE "/" "\\" source_path_msvc "${source_path}")
+		string(REPLACE "include" "Header Files" source_path_msvc "${source_path_msvc}")
+		string(REPLACE "src" "Source Files" source_path_msvc "${source_path_msvc}")
+		source_group("${source_path_msvc}" FILES "${source}")
+		endif (source_path STREQUAL "")
+	endforeach()
+ENDFUNCTION()
+
+# Copy output directory
+MACRO(ADD_TARGET_OUTPUT_DIR projoutputname subdirectory)
+	add_custom_command(TARGET ${projoutputname}
+		POST_BUILD
+		COMMAND xcopy /Y \"$(OutputPath)$(TargetFileName)\" \"${OP_BINARY_OUTPUT_DIRECTORY}${subdirectory}\"\n
+		if exist \"$(OutputPath)$(TargetName).pdb\" xcopy /Y \"$(OutputPath)$(TargetName).pdb\" \"${OP_BINARY_OUTPUT_DIRECTORY}${subdirectory}\"
+	)
+ENDMACRO()
+MACRO(ADD_TARGET_OUTPUT projoutputname)
+	ADD_TARGET_OUTPUT_DIR(${projoutputname} "")
+ENDMACRO()
+
+add_definitions(-DPLATFORM_WINDOWS)
+add_definitions(-DUNICODE -D_UNICODE)
+add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_NO_EXCEPTION)
+add_definitions(-DPSAPI_VERSION=1) # https://msdn.microsoft.com/en-us/library/windows/desktop/ms682623(v=vs.85).aspx
+
+if ("${BITS}" EQUAL "64")
+	add_definitions(-DWIN64)
+	add_definitions(-DPLATFORM_X64)
+endif ("${BITS}" EQUAL "64")
+
+
+set(CMAKE_CXX_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- ") # /fp:fast
+#set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
+set(CMAKE_CXX_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
+set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "Flags used by the compiler during all build types (Forced version)." FORCE)
+set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- ") # /fp:fast
+#set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
+set(CMAKE_C_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
+
+# set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} libcmt.lib")
+
+# 4996 deprecated API
+# 4530 exception handler used, but unwind semantics are not enabled
+# 4577 'noexcept' used with no exception handling mode specified; termination on exception is not guaranteed
+# 4091 'keyword' : ignored on left of 'type' when no variable is declared
+# 4351 new behavior: elements of array '' will be default initialized
+# 4838 conversion from 'const uint32' to 'const float' requires a narrowing conversion
+set(CMAKE_CXX_FLAGS "/wd4996 /wd4530 /wd4577 /wd4091 /wd4351 /wd4838")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /INCREMENTAL:NO /DEBUG /LTCG")
+set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /INCREMENTAL:NO /DEBUG /LTCG")
+#set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /DEBUG")
+#set(CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL "${CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL}")
+#set(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "${CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL} /DEBUG")
+string(REPLACE "/EHsc" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+
+# static libraries
+add_subdirectory(mediaextensions)
+

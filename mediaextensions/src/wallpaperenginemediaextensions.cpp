@@ -15,7 +15,6 @@ namespace
 	struct SoundInstance
 	{
 		sf::SoundStream *sound;
-		string key;
 	};
 }
 
@@ -41,64 +40,24 @@ void WallpaperEngineMediaExtensions::Destroy()
 	}
 }
 
-void *WallpaperEngineMediaExtensions::CreateSound(const char *name, uint8_t *data, uint32_t sizeInBytes)
+IWallpaperEngineMediaExtensions::SoundBufferHandle WallpaperEngineMediaExtensions::CreateSoundBuffer(const char *name, uint8_t *data, uint32_t sizeInBytes)
 {
-	WINASSERT(name != nullptr);
-
-	MediaSoundBuffer *buffer = nullptr;
-
+	unique_lock<mutex> lock(soundBufferMutex);
+	auto itr = soundBuffers.find(name);
+	if (itr != soundBuffers.end())
 	{
-		unique_lock<mutex> lock(soundBufferMutex);
-		auto itr = soundBuffers.find(name);
-		if (itr != soundBuffers.end())
-		{
-			++itr->second->referenceCount;
-			buffer = itr->second;
-		}
-		else if (data != nullptr && sizeInBytes > 0)
-		{
-			buffer = new MediaSoundBuffer();
-			buffer->referenceCount = 1;
-			buffer->data = new uint8_t[sizeInBytes];
-			memcpy(buffer->data, data, sizeInBytes);
-			buffer->sizeInBytes = sizeInBytes;
-			soundBuffers[name] = buffer;
-		}
+		++itr->second->referenceCount;
+		return itr->second;
 	}
-
-	if (buffer != nullptr)
+	else if (data != nullptr && sizeInBytes > 0)
 	{
-		sf::SoundStream *validSoundStream = nullptr;
-		sf::Music *music = new sf::Music();
-
-		if (music->openFromMemory(buffer->data, buffer->sizeInBytes))
-		{
-			validSoundStream = music;
-		}
-		else
-		{
-			delete music;
-			// Try loading as mp3
-
-			sf::Mp3SoundStream *mp3 = new sf::Mp3SoundStream();
-			if (mp3->openFromMemory(buffer->data, buffer->sizeInBytes))
-			{
-				validSoundStream = mp3;
-			}
-			else
-			{
-				delete mp3;
-			}
-		}
-
-		// Unable to open memory as audio file
-		if (validSoundStream == nullptr)
-			return nullptr;
-
-		SoundInstance *soundInstance = new SoundInstance();
-		soundInstance->key = name;
-		soundInstance->sound = validSoundStream;
-		return soundInstance;
+		MediaSoundBuffer *buffer = new MediaSoundBuffer();
+		buffer->referenceCount = 1;
+		buffer->data = new uint8_t[sizeInBytes];
+		memcpy(buffer->data, data, sizeInBytes);
+		buffer->sizeInBytes = sizeInBytes;
+		soundBuffers[name] = buffer;
+		return buffer;
 	}
 	else
 	{
@@ -106,28 +65,69 @@ void *WallpaperEngineMediaExtensions::CreateSound(const char *name, uint8_t *dat
 	}
 }
 
-void WallpaperEngineMediaExtensions::DestroySound(void *handle)
+void WallpaperEngineMediaExtensions::DestroySoundBuffer(SoundBufferHandle handle)
+{
+	MediaSoundBuffer *buffer = (MediaSoundBuffer*)handle;
+	if (--buffer->referenceCount == 0)
+	{
+		delete[] buffer->data;
+		delete buffer;
+		for (auto itr : soundBuffers)
+		{
+			if (itr.second == buffer)
+			{
+				soundBuffers.erase(itr.first);
+				break;
+			}
+		}
+	}
+}
+
+IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::CreateSound(SoundBufferHandle bufferHandle)
+{
+	MediaSoundBuffer *buffer = (MediaSoundBuffer*)bufferHandle;
+	sf::SoundStream *validSoundStream = nullptr;
+	sf::Music *music = new sf::Music();
+
+	if (music->openFromMemory(buffer->data, buffer->sizeInBytes))
+	{
+		validSoundStream = music;
+	}
+	else
+	{
+		delete music;
+		// Try loading as mp3
+
+		sf::Mp3SoundStream *mp3 = new sf::Mp3SoundStream();
+		if (mp3->openFromMemory(buffer->data, buffer->sizeInBytes))
+		{
+			validSoundStream = mp3;
+		}
+		else
+		{
+			delete mp3;
+		}
+	}
+
+	// Unable to open memory as audio file
+	if (validSoundStream == nullptr)
+		return nullptr;
+
+	SoundInstance *soundInstance = new SoundInstance();
+	soundInstance->sound = validSoundStream;
+	return soundInstance;
+}
+
+void WallpaperEngineMediaExtensions::DestroySound(SoundHandle handle)
 {
 	WINASSERT(handle != nullptr);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	unique_lock<mutex> lock(soundBufferMutex);
-	auto itr = soundBuffers.find(soundInstance->key);
 
 	if (soundInstance->sound->getStatus() != sf::Sound::Stopped)
 		soundInstance->sound->stop();
 	delete soundInstance->sound;
 	delete soundInstance;
-
-	WINASSERT(itr != soundBuffers.end());
-	if (itr != soundBuffers.end())
-	{
-		if (--itr->second->referenceCount == 0)
-		{
-			delete[] itr->second->data;
-			delete itr->second;
-			soundBuffers.erase(itr);
-		}
-	}
 }
 
 void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)

@@ -14,14 +14,17 @@ namespace sf
 
 		bool openFromMemory(void* data, size_t sizeInBytes);
 
+		float GetDuration() const { return duration; }
+
 	protected:
 		bool onGetData(Chunk& data);
 		void onSeek(Time timeOffset);
 
 	private:
-		mpg123_handle *myHandle;
+		mpg123_handle * myHandle;
 		size_t myBufferSize;
 		unsigned char *myBuffer;
 		Mutex myMutex;
+		float duration;
 	};
 }

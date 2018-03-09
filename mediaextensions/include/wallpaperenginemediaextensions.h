@@ -17,6 +17,8 @@ public:
 	virtual SoundHandle CreateSound(SoundBufferHandle bufferHandle);
 	virtual void DestroySound(SoundHandle handle);
 
+	virtual float GetDuration(SoundHandle handle);
+	virtual bool IsPlaying(SoundHandle handle);
 	virtual void Play(SoundHandle handle, bool loop);
 	virtual void Pause(SoundHandle handle);
 	virtual void Stop(SoundHandle handle);

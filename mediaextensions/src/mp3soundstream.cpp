@@ -22,6 +22,7 @@ namespace sf
 		: myHandle(nullptr)
 		, myBufferSize(0)
 		, myBuffer(nullptr)
+		, duration(0.0f)
 	{
 		int  err = MPG123_OK;
 		if ((err = mpg123_init()) != MPG123_OK)
@@ -86,6 +87,9 @@ namespace sf
 		{
 			return false;
 		}
+
+		off_t sampleCount = mpg123_length(myHandle);
+		duration = sampleCount / double(rate);
 
 		initialize(channels, rate);
 		return true;

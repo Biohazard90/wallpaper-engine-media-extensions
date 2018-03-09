@@ -15,6 +15,7 @@ namespace
 	struct SoundInstance
 	{
 		sf::SoundStream *sound;
+		float duration;
 	};
 }
 
@@ -87,11 +88,13 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 {
 	MediaSoundBuffer *buffer = (MediaSoundBuffer*)bufferHandle;
 	sf::SoundStream *validSoundStream = nullptr;
+	float duration = 0.0f;
 	sf::Music *music = new sf::Music();
 
 	if (music->openFromMemory(buffer->data, buffer->sizeInBytes))
 	{
 		validSoundStream = music;
+		duration = music->getDuration().asSeconds();
 	}
 	else
 	{
@@ -102,6 +105,7 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 		if (mp3->openFromMemory(buffer->data, buffer->sizeInBytes))
 		{
 			validSoundStream = mp3;
+			duration = mp3->GetDuration();
 		}
 		else
 		{
@@ -115,6 +119,7 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 
 	SoundInstance *soundInstance = new SoundInstance();
 	soundInstance->sound = validSoundStream;
+	soundInstance->duration = duration;
 	return soundInstance;
 }
 
@@ -128,6 +133,20 @@ void WallpaperEngineMediaExtensions::DestroySound(SoundHandle handle)
 		soundInstance->sound->stop();
 	delete soundInstance->sound;
 	delete soundInstance;
+}
+
+float WallpaperEngineMediaExtensions::GetDuration(SoundHandle handle)
+{
+	WINASSERT(handle != nullptr);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	return soundInstance->duration;
+}
+
+bool WallpaperEngineMediaExtensions::IsPlaying(SoundHandle handle)
+{
+	WINASSERT(handle != nullptr);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	return soundInstance->sound->getStatus() == sf::SoundSource::Playing;
 }
 
 void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)

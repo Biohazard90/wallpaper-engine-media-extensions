@@ -149,6 +149,20 @@ bool WallpaperEngineMediaExtensions::IsPlaying(SoundHandle handle)
 	return soundInstance->sound->getStatus() == sf::SoundSource::Playing;
 }
 
+bool WallpaperEngineMediaExtensions::IsPaused(SoundHandle handle)
+{
+	WINASSERT(handle != nullptr);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	return soundInstance->sound->getStatus() == sf::SoundSource::Paused;
+}
+
+bool WallpaperEngineMediaExtensions::IsStopped(SoundHandle handle)
+{
+	WINASSERT(handle != nullptr);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	return soundInstance->sound->getStatus() == sf::SoundSource::Stopped;
+}
+
 void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)
 {
 	WINASSERT(handle != nullptr);

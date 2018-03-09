@@ -19,6 +19,8 @@ public:
 
 	virtual float GetDuration(SoundHandle handle);
 	virtual bool IsPlaying(SoundHandle handle);
+	virtual bool IsPaused(SoundHandle handle);
+	virtual bool IsStopped(SoundHandle handle);
 	virtual void Play(SoundHandle handle, bool loop);
 	virtual void Pause(SoundHandle handle);
 	virtual void Stop(SoundHandle handle);

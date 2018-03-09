@@ -20,6 +20,8 @@ public:
 
 	virtual float GetDuration(SoundHandle handle) = 0;
 	virtual bool IsPlaying(SoundHandle handle) = 0;
+	virtual bool IsPaused(SoundHandle handle) = 0;
+	virtual bool IsStopped(SoundHandle handle) = 0;
 	virtual void Play(SoundHandle handle, bool loop) = 0;
 	virtual void Pause(SoundHandle handle) = 0;
 	virtual void Stop(SoundHandle handle) = 0;

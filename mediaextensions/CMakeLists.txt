@@ -26,7 +26,7 @@ ADD_MSVC_PRECOMPILED_HEADER("pch.h" "src/pch.cpp" mediaextensions_src)
 add_library(${projoutputname} SHARED ${mediaextensions_src})
 
 target_link_libraries(${projoutputname} optimized libcmt)
-target_link_libraries(${projoutputname} flac ogg vorbis vorbisfile openal32 Shlwapi)
+target_link_libraries(${projoutputname} flac ogg vorbis vorbisfile Shlwapi openal32)
 target_link_libraries(${projoutputname} optimized sfml-system-s debug sfml-system-s-d)
 target_link_libraries(${projoutputname} optimized sfml-audio-s debug sfml-audio-s-d)
 target_link_libraries(${projoutputname} optimized libmpg123 debug libmpg123-d)

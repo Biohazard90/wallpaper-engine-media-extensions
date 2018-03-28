@@ -9,6 +9,11 @@ The following prerequisites need to be installed/available:
 * SFML 2 (static lib)
 * mpg123 (static lib)
 
+Compile prerequisites
+* Compile OpenAL from https://github.com/kcat/openal-soft with LIBTYPE = STATIC
+* Add to AL includes #define AL_LIBTYPE_STATIC
+* Compile SFML2 statically, replace OpenAL lib with static lib above
+* Compile mpg123 as static library
 
 Clone this project and open it in CMake. Choose the Visual Studio 2017 generator for x86 or x64. Specify the following variables for the project inside CMake:
 

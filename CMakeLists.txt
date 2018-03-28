@@ -11,24 +11,16 @@ project ("WEMediaExtensions${BITS}")
 # Configure global paths
 
 # Options
-set(OP_SFML2_LIB_X32 "" CACHE STRING "Path to SFML 2 x86 static libraries")
-set(OP_SFML2_LIB_X64 "" CACHE STRING "Path to SFML 2 x64 static libraries")
-set(OP_SFML2_EXTERNAL_LIB_X32 "" CACHE STRING "Path to SFML 2 x86 external libraries")
-set(OP_SFML2_EXTERNAL_LIB_X64 "" CACHE STRING "Path to SFML 2 x64 external libraries")
-
+set(OP_SFML2_LIB "" CACHE STRING "Path to SFML 2 static libraries")
+set(OP_SFML2_EXTERNAL_LIB "" CACHE STRING "Path to SFML 2 external libraries")
 set(OP_SFML2_INC "" CACHE STRING "Path to SFML 2 include files")
 
-set(OP_MPG123_LIB_X32 "" CACHE STRING "Path to mpg123 x86 static libraries")
-set(OP_MPG123_LIB_X64 "" CACHE STRING "Path to mpg123 x64 static libraries")
-
+set(OP_MPG123_LIB "" CACHE STRING "Path to mpg123 static libraries")
 set(OP_MPG123_INC "" CACHE STRING "Path to mpg123 include files")
 
 set(OP_BINARY_OUTPUT_DIRECTORY "" CACHE STRING "Output directory (wallpaper_engine/bin)")
 
 # Derived options, do not edit
-set(OP_SFML2_LIB "${OP_SFML2_LIB_X${BITS}}")
-set(OP_SFML2_EXTERNAL_LIB "${OP_SFML2_EXTERNAL_LIB_X${BITS}}")
-set(OP_MPG123_LIB "${OP_MPG123_LIB_X${BITS}}")
 
 # Precompiled headers
 MACRO(ADD_MSVC_PRECOMPILED_HEADER PrecompiledHeader PrecompiledSource SourcesVar)

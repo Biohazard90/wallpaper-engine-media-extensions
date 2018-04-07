@@ -16,6 +16,7 @@ namespace
 	{
 		sf::SoundStream *sound;
 		float duration;
+		sf::Music::Status status;
 	};
 }
 
@@ -37,8 +38,8 @@ void WallpaperEngineMediaExtensions::Destroy()
 	if (mpgInitCount.fetch_sub(1) == 1)
 	{
 		mpg123_exit();
-		delete this;
 	}
+	delete this;
 }
 
 IWallpaperEngineMediaExtensions::SoundBufferHandle WallpaperEngineMediaExtensions::CreateSoundBuffer(const char *name, uint8_t *data, uint32_t sizeInBytes)
@@ -71,8 +72,6 @@ void WallpaperEngineMediaExtensions::DestroySoundBuffer(SoundBufferHandle handle
 	MediaSoundBuffer *buffer = (MediaSoundBuffer*)handle;
 	if (--buffer->referenceCount == 0)
 	{
-		delete[] buffer->data;
-		delete buffer;
 		for (auto itr : soundBuffers)
 		{
 			if (itr.second == buffer)
@@ -81,6 +80,9 @@ void WallpaperEngineMediaExtensions::DestroySoundBuffer(SoundBufferHandle handle
 				break;
 			}
 		}
+
+		delete[] buffer->data;
+		delete buffer;
 	}
 }
 
@@ -118,6 +120,7 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 		return nullptr;
 
 	SoundInstance *soundInstance = new SoundInstance();
+	soundInstance->status = sf::Music::Stopped;
 	soundInstance->sound = validSoundStream;
 	soundInstance->duration = duration;
 	return soundInstance;
@@ -129,7 +132,8 @@ void WallpaperEngineMediaExtensions::DestroySound(SoundHandle handle)
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	unique_lock<mutex> lock(soundBufferMutex);
 
-	if (soundInstance->sound->getStatus() != sf::Sound::Stopped)
+	//if (soundInstance->sound->getStatus() != sf::Sound::Stopped)
+	if (soundInstance->status != sf::Sound::Stopped)
 		soundInstance->sound->stop();
 	delete soundInstance->sound;
 	delete soundInstance;
@@ -146,21 +150,24 @@ bool WallpaperEngineMediaExtensions::IsPlaying(SoundHandle handle)
 {
 	WINASSERT(handle != nullptr);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	return soundInstance->sound->getStatus() == sf::SoundSource::Playing;
+	//return soundInstance->sound->getStatus() == sf::SoundSource::Playing;
+	return soundInstance->status == sf::SoundSource::Playing;
 }
 
 bool WallpaperEngineMediaExtensions::IsPaused(SoundHandle handle)
 {
 	WINASSERT(handle != nullptr);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	return soundInstance->sound->getStatus() == sf::SoundSource::Paused;
+	//return soundInstance->sound->getStatus() == sf::SoundSource::Paused;
+	return soundInstance->status == sf::SoundSource::Paused;
 }
 
 bool WallpaperEngineMediaExtensions::IsStopped(SoundHandle handle)
 {
 	WINASSERT(handle != nullptr);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	return soundInstance->sound->getStatus() == sf::SoundSource::Stopped;
+	//return soundInstance->sound->getStatus() == sf::SoundSource::Stopped;
+	return soundInstance->status == sf::SoundSource::Stopped;
 }
 
 void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)
@@ -169,6 +176,7 @@ void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->setLoop(loop);
 	soundInstance->sound->play();
+	soundInstance->status = sf::Music::Playing;
 }
 
 void WallpaperEngineMediaExtensions::Pause(void *handle)
@@ -176,6 +184,7 @@ void WallpaperEngineMediaExtensions::Pause(void *handle)
 	WINASSERT(handle != nullptr);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->pause();
+	soundInstance->status = sf::Music::Paused;
 }
 
 void WallpaperEngineMediaExtensions::Stop(void *handle)
@@ -183,6 +192,7 @@ void WallpaperEngineMediaExtensions::Stop(void *handle)
 	WINASSERT(handle != nullptr);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->stop();
+	soundInstance->status = sf::Music::Stopped;
 }
 
 void WallpaperEngineMediaExtensions::SetVolume(void *handle, float volume)

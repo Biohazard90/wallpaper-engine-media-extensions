@@ -12,6 +12,7 @@ atomic<int> WallpaperEngineMediaExtensions::mpgInitCount = 0;
 
 namespace
 {
+	std::mutex soundBufferMutex;
 	struct SoundInstance
 	{
 		sf::SoundStream *sound;
@@ -69,6 +70,7 @@ IWallpaperEngineMediaExtensions::SoundBufferHandle WallpaperEngineMediaExtension
 
 void WallpaperEngineMediaExtensions::DestroySoundBuffer(SoundBufferHandle handle)
 {
+	unique_lock<mutex> lock(soundBufferMutex);
 	MediaSoundBuffer *buffer = (MediaSoundBuffer*)handle;
 	if (--buffer->referenceCount == 0)
 	{
@@ -89,6 +91,7 @@ void WallpaperEngineMediaExtensions::DestroySoundBuffer(SoundBufferHandle handle
 IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::CreateSound(SoundBufferHandle bufferHandle)
 {
 	MediaSoundBuffer *buffer = (MediaSoundBuffer*)bufferHandle;
+	unique_lock<mutex> lock(soundBufferMutex);
 	sf::SoundStream *validSoundStream = nullptr;
 	float duration = 0.0f;
 	sf::Music *music = new sf::Music();
@@ -129,8 +132,8 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 void WallpaperEngineMediaExtensions::DestroySound(SoundHandle handle)
 {
 	WINASSERT(handle != nullptr);
-	SoundInstance *soundInstance = (SoundInstance*)handle;
 	unique_lock<mutex> lock(soundBufferMutex);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
 
 	//if (soundInstance->sound->getStatus() != sf::Sound::Stopped)
 	if (soundInstance->status != sf::Sound::Stopped)
@@ -173,6 +176,7 @@ bool WallpaperEngineMediaExtensions::IsStopped(SoundHandle handle)
 void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)
 {
 	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->setLoop(loop);
 	soundInstance->sound->play();
@@ -182,6 +186,7 @@ void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)
 void WallpaperEngineMediaExtensions::Pause(void *handle)
 {
 	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->pause();
 	soundInstance->status = sf::Music::Paused;
@@ -190,6 +195,7 @@ void WallpaperEngineMediaExtensions::Pause(void *handle)
 void WallpaperEngineMediaExtensions::Stop(void *handle)
 {
 	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->stop();
 	soundInstance->status = sf::Music::Stopped;
@@ -198,6 +204,7 @@ void WallpaperEngineMediaExtensions::Stop(void *handle)
 void WallpaperEngineMediaExtensions::SetVolume(void *handle, float volume)
 {
 	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 	soundInstance->sound->setVolume(100.0f * volume);
 }

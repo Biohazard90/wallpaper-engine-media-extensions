@@ -36,5 +36,4 @@ private:
 		uint32_t sizeInBytes;
 	};
 	std::unordered_map<std::string, MediaSoundBuffer*> soundBuffers;
-	std::mutex soundBufferMutex;
 };

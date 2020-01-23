@@ -11,6 +11,8 @@ project ("WEMediaExtensions${BITS}")
 # Configure global paths
 
 # Options
+# SFML SHOULD LINK OPENAL STATICALLY
+# USE OPENAL-SOFT AND MAKE SURE THAT WORKS OUT
 set(OP_SFML2_LIB "" CACHE STRING "Path to SFML 2 static libraries")
 set(OP_SFML2_EXTERNAL_LIB "" CACHE STRING "Path to SFML 2 external libraries")
 set(OP_SFML2_INC "" CACHE STRING "Path to SFML 2 include files")
@@ -96,6 +98,7 @@ MACRO(ADD_TARGET_OUTPUT projoutputname)
 ENDMACRO()
 
 add_definitions(-DPLATFORM_WINDOWS)
+add_definitions(-D_HAS_EXCEPTIONS=0 -D_STATIC_CPPLIB)
 add_definitions(-DUNICODE -D_UNICODE)
 add_definitions(-DBOOST_ALL_NO_LIB -DBOOST_NO_EXCEPTION)
 add_definitions(-DPSAPI_VERSION=1) # https://msdn.microsoft.com/en-us/library/windows/desktop/ms682623(v=vs.85).aspx
@@ -106,11 +109,11 @@ if ("${BITS}" EQUAL "64")
 endif ("${BITS}" EQUAL "64")
 
 
-set(CMAKE_CXX_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- ") # /fp:fast
+set(CMAKE_CXX_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
 set(CMAKE_CXX_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "Flags used by the compiler during all build types (Forced version)." FORCE)
-set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- ") # /fp:fast
+set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
 set(CMAKE_C_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
 

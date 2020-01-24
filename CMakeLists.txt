@@ -1,5 +1,9 @@
 cmake_minimum_required (VERSION 3.4)
 
+#set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION "10.0.17763" CACHE STRING INTERNAL FORCE)
+#set(CMAKE_HOST_SYSTEM "Windows-10.0.17763" CACHE STRING INTERNAL FORCE)
+#set(CMAKE_SYSTEM_VERSION "10.0.17763" CACHE STRING INTERNAL FORCE)
+
 project (WEMediaExtensions)
 math(EXPR BITS "8*${CMAKE_SIZEOF_VOID_P}")
 
@@ -8,19 +12,27 @@ if(CMAKE_CONFIGURATION_TYPES)
 endif()
 project ("WEMediaExtensions${BITS}")
 
+#message(STATUS "Windows SDK target ${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION}")
+#message(STATUS "Windows SDK target ${CMAKE_HOST_SYSTEM}")
+#message(STATUS "Windows SDK target ${CMAKE_SYSTEM_VERSION}")
 # Configure global paths
 
 # Options
 # SFML SHOULD LINK OPENAL STATICALLY
 # USE OPENAL-SOFT AND MAKE SURE THAT WORKS OUT
-set(OP_SFML2_LIB "" CACHE STRING "Path to SFML 2 static libraries")
-set(OP_SFML2_EXTERNAL_LIB "" CACHE STRING "Path to SFML 2 external libraries")
-set(OP_SFML2_INC "" CACHE STRING "Path to SFML 2 include files")
+set(OP_SFML2_INC "D:/dev/welibs/sfml_2.5.1/src/include" CACHE STRING "Path to SFML 2 include files")
+set(OP_MPG123_INC "D:/dev/welibs/mpg123/include" CACHE STRING "Path to mpg123 include files")
+set(OP_BINARY_OUTPUT_DIRECTORY "D:/dev/we/windows/bin/bin" CACHE STRING "Output directory (wallpaper_engine/bin)")
 
-set(OP_MPG123_LIB "" CACHE STRING "Path to mpg123 static libraries")
-set(OP_MPG123_INC "" CACHE STRING "Path to mpg123 include files")
-
-set(OP_BINARY_OUTPUT_DIRECTORY "" CACHE STRING "Output directory (wallpaper_engine/bin)")
+if ("${BITS}" EQUAL "32")
+set(OP_SFML2_LIB "D:/dev/welibs/sfml_2.5.1/x86" CACHE STRING "Path to SFML 2 static libraries")
+set(OP_SFML2_EXTERNAL_LIB "D:/dev/welibs/sfml_2.5.1/x86_external" CACHE STRING "Path to SFML 2 external libraries")
+set(OP_MPG123_LIB "D:/dev/welibs/mpg123/x86" CACHE STRING "Path to mpg123 static libraries")
+else ("${BITS}" EQUAL "32")
+set(OP_SFML2_LIB "D:/dev/welibs/sfml_2.5.1/x64" CACHE STRING "Path to SFML 2 static libraries")
+set(OP_SFML2_EXTERNAL_LIB "D:/dev/welibs/sfml_2.5.1/x64_external" CACHE STRING "Path to SFML 2 external libraries")
+set(OP_MPG123_LIB "D:/dev/welibs/mpg123/x64" CACHE STRING "Path to mpg123 static libraries")
+endif()
 
 # Derived options, do not edit
 

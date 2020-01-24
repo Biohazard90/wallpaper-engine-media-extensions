@@ -121,9 +121,9 @@ if ("${BITS}" EQUAL "64")
 endif ("${BITS}" EQUAL "64")
 
 
-set(CMAKE_CXX_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
+set(CMAKE_CXX_FLAGS_RELEASE "/MP32 /MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
-set(CMAKE_CXX_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
+set(CMAKE_CXX_FLAGS_DEBUG "/MP32 /MTd /GR- /Od /Zi /arch:SSE2 ")
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "Flags used by the compiler during all build types (Forced version)." FORCE)
 set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")

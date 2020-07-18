@@ -21,17 +21,17 @@ project ("WEMediaExtensions${BITS}")
 # SFML SHOULD LINK OPENAL STATICALLY
 # USE OPENAL-SOFT AND MAKE SURE THAT WORKS OUT
 set(OP_SFML2_INC "D:/dev/welibs/sfml_2.5.1/src/include" CACHE STRING "Path to SFML 2 include files")
-set(OP_MPG123_INC "D:/dev/welibs/mpg123/include" CACHE STRING "Path to mpg123 include files")
+set(OP_MPG123_INC "D:/dev/welibs/mpg123_1.26.1/include" CACHE STRING "Path to mpg123 include files")
 set(OP_BINARY_OUTPUT_DIRECTORY "D:/dev/we/windows/bin/bin" CACHE STRING "Output directory (wallpaper_engine/bin)")
 
 if ("${BITS}" EQUAL "32")
 set(OP_SFML2_LIB "D:/dev/welibs/sfml_2.5.1/x86" CACHE STRING "Path to SFML 2 static libraries")
 set(OP_SFML2_EXTERNAL_LIB "D:/dev/welibs/sfml_2.5.1/x86_external" CACHE STRING "Path to SFML 2 external libraries")
-set(OP_MPG123_LIB "D:/dev/welibs/mpg123/x86" CACHE STRING "Path to mpg123 static libraries")
+set(OP_MPG123_LIB "D:/dev/welibs/mpg123_1.26.1/x86" CACHE STRING "Path to mpg123 static libraries")
 else ("${BITS}" EQUAL "32")
 set(OP_SFML2_LIB "D:/dev/welibs/sfml_2.5.1/x64" CACHE STRING "Path to SFML 2 static libraries")
 set(OP_SFML2_EXTERNAL_LIB "D:/dev/welibs/sfml_2.5.1/x64_external" CACHE STRING "Path to SFML 2 external libraries")
-set(OP_MPG123_LIB "D:/dev/welibs/mpg123/x64" CACHE STRING "Path to mpg123 static libraries")
+set(OP_MPG123_LIB "D:/dev/welibs/mpg123_1.26.1/x64" CACHE STRING "Path to mpg123 static libraries")
 endif()
 
 # Derived options, do not edit

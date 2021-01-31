@@ -29,7 +29,7 @@ target_link_libraries(${projoutputname} optimized libcmt)
 target_link_libraries(${projoutputname} flac ogg vorbis vorbisfile Shlwapi openal32)
 target_link_libraries(${projoutputname} optimized sfml-system-s debug sfml-system-s-d)
 target_link_libraries(${projoutputname} optimized sfml-audio-s debug sfml-audio-s-d)
-target_link_libraries(${projoutputname} optimized libmpg123 debug libmpg123-d)
+target_link_libraries(${projoutputname} optimized libmpg123 debug libmpg123d)
 
 target_link_libraries(${projoutputname} Winmm)
 

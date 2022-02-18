@@ -3,12 +3,7 @@
 
 #include "wallpaperenginemediaextensions.h"
 
-#include "mp3soundstream.h"
-#include "mpg123/mpg123.h"
-
 using namespace std;
-
-atomic<int> WallpaperEngineMediaExtensions::mpgInitCount = 0;
 
 namespace
 {
@@ -28,18 +23,10 @@ WallpaperEngineMediaExtensions::~WallpaperEngineMediaExtensions()
 
 void WallpaperEngineMediaExtensions::Init()
 {
-	if (mpgInitCount.fetch_add(1) == 0)
-	{
-		mpg123_init();
-	}
 }
 
 void WallpaperEngineMediaExtensions::Destroy()
 {
-	if (mpgInitCount.fetch_sub(1) == 1)
-	{
-		mpg123_exit();
-	}
 	delete this;
 }
 
@@ -100,22 +87,6 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 	{
 		validSoundStream = music;
 		duration = music->getDuration().asSeconds();
-	}
-	else
-	{
-		delete music;
-		// Try loading as mp3
-
-		sf::Mp3SoundStream *mp3 = new sf::Mp3SoundStream();
-		if (mp3->openFromMemory(buffer->data, buffer->sizeInBytes))
-		{
-			validSoundStream = mp3;
-			duration = mp3->GetDuration();
-		}
-		else
-		{
-			delete mp3;
-		}
 	}
 
 	// Unable to open memory as audio file

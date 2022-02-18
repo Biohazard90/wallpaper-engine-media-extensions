@@ -24,17 +24,14 @@ project ("WEMediaExtensions${BITS}")
 # SFML SHOULD LINK OPENAL STATICALLY
 # USE OPENAL-SOFT AND MAKE SURE THAT WORKS OUT
 set(OP_SFML2_INC "D:/dev/welibs/sfml_2.5.1/src/include" CACHE STRING "Path to SFML 2 include files")
-set(OP_MPG123_INC "D:/dev/welibs/mpg123_1.26.3/include" CACHE STRING "Path to mpg123 include files")
 set(OP_BINARY_OUTPUT_DIRECTORY "D:/dev/we/windows/bin/bin" CACHE STRING "Output directory (wallpaper_engine/bin)")
 
 if ("${BITS}" EQUAL "32")
 set(OP_SFML2_LIB "D:/dev/welibs/sfml_2.5.1/x86" CACHE STRING "Path to SFML 2 static libraries")
 set(OP_SFML2_EXTERNAL_LIB "D:/dev/welibs/sfml_2.5.1/x86_external" CACHE STRING "Path to SFML 2 external libraries")
-set(OP_MPG123_LIB "D:/dev/welibs/mpg123_1.26.3/x86" CACHE STRING "Path to mpg123 static libraries")
 else ("${BITS}" EQUAL "32")
 set(OP_SFML2_LIB "D:/dev/welibs/sfml_2.5.1/x64" CACHE STRING "Path to SFML 2 static libraries")
 set(OP_SFML2_EXTERNAL_LIB "D:/dev/welibs/sfml_2.5.1/x64_external" CACHE STRING "Path to SFML 2 external libraries")
-set(OP_MPG123_LIB "D:/dev/welibs/mpg123_1.26.3/x64" CACHE STRING "Path to mpg123 static libraries")
 endif()
 
 # Derived options, do not edit
@@ -124,10 +121,12 @@ if ("${BITS}" EQUAL "64")
 endif ("${BITS}" EQUAL "64")
 
 
+set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 ") # /fp:fast
 set(CMAKE_CXX_FLAGS_RELEASE "/MP32 /MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
 set(CMAKE_CXX_FLAGS_DEBUG "/MP32 /MTd /GR- /Od /Zi /arch:SSE2 ")
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "Flags used by the compiler during all build types (Forced version)." FORCE)
+set(CMAKE_C_FLAGS_DEBUG "/std:c++17 ") # /fp:fast
 set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
 set(CMAKE_C_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")

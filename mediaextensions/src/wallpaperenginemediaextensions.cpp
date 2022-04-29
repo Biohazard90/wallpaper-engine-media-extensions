@@ -30,7 +30,7 @@ void WallpaperEngineMediaExtensions::Destroy()
 	delete this;
 }
 
-IWallpaperEngineMediaExtensions::SoundBufferHandle WallpaperEngineMediaExtensions::CreateSoundBuffer(const char *name, uint8_t *data, uint32_t sizeInBytes)
+IWallpaperEngineMediaExtensions::SoundBufferHandle WallpaperEngineMediaExtensions::CreateSoundBuffer(const char *name, const uint8_t *data, uint32_t sizeInBytes)
 {
 	unique_lock<mutex> lock(soundBufferMutex);
 	auto itr = soundBuffers.find(name);

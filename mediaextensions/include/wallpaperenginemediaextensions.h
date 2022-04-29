@@ -11,7 +11,7 @@ public:
 	virtual void Init();
 	virtual void Destroy();
 
-	virtual SoundBufferHandle CreateSoundBuffer(const char *name, uint8_t *data, uint32_t sizeInBytes);
+	virtual SoundBufferHandle CreateSoundBuffer(const char *name, const uint8_t *data, uint32_t sizeInBytes);
 	virtual void DestroySoundBuffer(SoundBufferHandle handle);
 
 	virtual SoundHandle CreateSound(SoundBufferHandle bufferHandle);

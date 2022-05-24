@@ -120,16 +120,22 @@ if ("${BITS}" EQUAL "64")
 	add_definitions(-DPLATFORM_X64)
 endif ("${BITS}" EQUAL "64")
 
+set(common_build_flags "/MP32 /arch:SSE2 /std:c++17 /std:c17")
+set(common_linker_flags "/LTCG /pdbaltpath:%_PDB%")
 
-set(CMAKE_CXX_FLAGS_DEBUG "/std:c++17 ") # /fp:fast
-set(CMAKE_CXX_FLAGS_RELEASE "/MP32 /MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
+if(EXISTS "D:/dev/we/buildtools/msdosstub.exe")
+set(common_linker_flags "${common_linker_flags} /STUB:D:\\dev\\we\\buildtools\\msdosstub.exe")
+endif()
+
+set(CMAKE_CXX_FLAGS_DEBUG "${common_build_flags} ") # /fp:fast
+set(CMAKE_CXX_FLAGS_RELEASE "/MP32 /MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /GS- ${common_build_flags} ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
-set(CMAKE_CXX_FLAGS_DEBUG "/MP32 /MTd /GR- /Od /Zi /arch:SSE2 ")
+set(CMAKE_CXX_FLAGS_DEBUG "/MP32 /MTd /GR- /Od /Zi ${common_build_flags} ")
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} CACHE STRING "Flags used by the compiler during all build types (Forced version)." FORCE)
-set(CMAKE_C_FLAGS_DEBUG "/std:c++17 ") # /fp:fast
-set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /arch:SSE2 /GS- /std:c++17 ") # /fp:fast
+set(CMAKE_C_FLAGS_DEBUG "${common_build_flags} ") # /fp:fast
+set(CMAKE_C_FLAGS_RELEASE "/MT /GF /GR- /Gy /Oi /O2 /Os /Zi /GL /GS- ${common_build_flags} ") # /fp:fast
 #set(CMAKE_CXX_FLAGS_MINSIZEREL "/MD /GF /GR- /Gy /Oi /O2 /Zi")
-set(CMAKE_C_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
+set(CMAKE_C_FLAGS_DEBUG "/MTd /GR- /Od /Zi ${common_build_flags} ")
 
 # set(CMAKE_CXX_STANDARD_LIBRARIES "${CMAKE_CXX_STANDARD_LIBRARIES} libcmt.lib")
 
@@ -140,9 +146,9 @@ set(CMAKE_C_FLAGS_DEBUG "/MTd /GR- /Od /Zi /arch:SSE2 ")
 # 4351 new behavior: elements of array '' will be default initialized
 # 4838 conversion from 'const uint32' to 'const float' requires a narrowing conversion
 set(CMAKE_CXX_FLAGS "/wd4996 /wd4530 /wd4577 /wd4091 /wd4351 /wd4838")
-set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /INCREMENTAL:NO /DEBUG /LTCG")
-set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} /LTCG")
-set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /INCREMENTAL:NO /DEBUG /LTCG")
+set(CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /INCREMENTAL:NO /DEBUG ${common_linker_flags}")
+set(CMAKE_STATIC_LINKER_FLAGS_RELEASE "${CMAKE_STATIC_LINKER_FLAGS_RELEASE} ")
+set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /INCREMENTAL:NO /DEBUG ${common_linker_flags}")
 #set(CMAKE_EXE_LINKER_FLAGS_MINSIZEREL "${CMAKE_EXE_LINKER_FLAGS_MINSIZEREL} /DEBUG")
 #set(CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL "${CMAKE_STATIC_LINKER_FLAGS_MINSIZEREL}")
 #set(CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL "${CMAKE_SHARED_LINKER_FLAGS_MINSIZEREL} /DEBUG")

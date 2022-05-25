@@ -124,7 +124,7 @@ set(common_build_flags "/MP32 /arch:SSE2 /std:c++17 /std:c17")
 set(common_linker_flags "/LTCG /pdbaltpath:%_PDB%")
 
 if(EXISTS "D:/dev/we/buildtools/msdosstub.exe")
-set(common_linker_flags "${common_linker_flags} /STUB:D:\\dev\\we\\buildtools\\msdosstub.exe")
+set(common_linker_flags "${common_linker_flags} /STUB:D:\\dev\\we\\buildtools\\msdosstub.exe /emittoolversioninfo:no")
 endif()
 
 set(CMAKE_CXX_FLAGS_DEBUG "${common_build_flags} ") # /fp:fast

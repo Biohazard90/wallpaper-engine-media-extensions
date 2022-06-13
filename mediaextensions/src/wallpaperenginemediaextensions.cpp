@@ -83,15 +83,24 @@ IWallpaperEngineMediaExtensions::SoundHandle WallpaperEngineMediaExtensions::Cre
 	float duration = 0.0f;
 	sf::Music *music = new sf::Music();
 
-	if (music->openFromMemory(buffer->data, buffer->sizeInBytes))
+	auto result = music->openFromMemory(buffer->data, buffer->sizeInBytes);
+	if (result == sf::Music::OPEN_SUCCESS)
 	{
 		validSoundStream = music;
 		duration = music->getDuration().asSeconds();
 	}
-
-	// Unable to open memory as audio file
-	if (validSoundStream == nullptr)
+	else if (result == sf::Music::OPEN_NO_AUDIO_DEVICE)
+	{
+		// SFML cannot init any audio devices, just continue without device so
+		// the client will reinitialize this stream when an audio device is connected
+		delete music;
+	}
+	else
+	{
+		// SFML ready, but data seems to be invalid or unsupported
+		delete music;
 		return nullptr;
+	}
 
 	SoundInstance *soundInstance = new SoundInstance();
 	soundInstance->status = sf::Music::Stopped;
@@ -107,7 +116,7 @@ void WallpaperEngineMediaExtensions::DestroySound(SoundHandle handle)
 	SoundInstance *soundInstance = (SoundInstance*)handle;
 
 	//if (soundInstance->sound->getStatus() != sf::Sound::Stopped)
-	if (soundInstance->status != sf::Sound::Stopped)
+	if (soundInstance->status != sf::Sound::Stopped && soundInstance->sound != nullptr)
 		soundInstance->sound->stop();
 	delete soundInstance->sound;
 	delete soundInstance;
@@ -149,8 +158,11 @@ void WallpaperEngineMediaExtensions::Play(void *handle, bool loop)
 	WINASSERT(handle != nullptr);
 	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	soundInstance->sound->setLoop(loop);
-	soundInstance->sound->play();
+	if (soundInstance->sound != nullptr)
+	{
+		soundInstance->sound->setLoop(loop);
+		soundInstance->sound->play();
+	}
 	soundInstance->status = sf::Music::Playing;
 }
 
@@ -159,7 +171,10 @@ void WallpaperEngineMediaExtensions::Pause(void *handle)
 	WINASSERT(handle != nullptr);
 	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	soundInstance->sound->pause();
+	if (soundInstance->sound != nullptr)
+	{
+		soundInstance->sound->pause();
+	}
 	soundInstance->status = sf::Music::Paused;
 }
 
@@ -168,7 +183,11 @@ void WallpaperEngineMediaExtensions::Stop(void *handle)
 	WINASSERT(handle != nullptr);
 	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	soundInstance->sound->stop();
+	//if (soundInstance->status != sf::SoundSource::Stopped)
+	if (soundInstance->sound != nullptr)
+	{
+		soundInstance->sound->stop();
+	}
 	soundInstance->status = sf::Music::Stopped;
 }
 
@@ -177,5 +196,8 @@ void WallpaperEngineMediaExtensions::SetVolume(void *handle, float volume)
 	WINASSERT(handle != nullptr);
 	unique_lock<mutex> lock(soundBufferMutex);
 	SoundInstance *soundInstance = (SoundInstance*)handle;
-	soundInstance->sound->setVolume(100.0f * volume);
+	if (soundInstance->sound != nullptr)
+	{
+		soundInstance->sound->setVolume(100.0f * volume);
+	}
 }

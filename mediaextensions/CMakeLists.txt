@@ -20,6 +20,7 @@ set(projoutputname "mediaextensions${BITS}")
 
 ADD_MSVC_PRECOMPILED_HEADER("pch.h" "src/pch.cpp" mediaextensions_src)
 add_library(${projoutputname} SHARED ${mediaextensions_src})
+target_link_options(${projoutputname} PRIVATE /PDBALTPATH:$<TARGET_PDB_FILE_NAME:${projoutputname}>)
 
 target_link_libraries(${projoutputname} optimized libcmt)
 target_link_libraries(${projoutputname} flac ogg vorbis vorbisfile Shlwapi)

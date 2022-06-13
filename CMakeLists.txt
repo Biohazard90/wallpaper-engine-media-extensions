@@ -121,7 +121,7 @@ if ("${BITS}" EQUAL "64")
 endif ("${BITS}" EQUAL "64")
 
 set(common_build_flags "/MP32 /arch:SSE2 /std:c++17 /std:c17")
-set(common_linker_flags "/LTCG /pdbaltpath:%_PDB%")
+set(common_linker_flags "/LTCG") # /pdbaltpath:%_PDB%")
 
 if(EXISTS "D:/dev/we/buildtools/msdosstub.exe")
 set(common_linker_flags "${common_linker_flags} /STUB:D:\\dev\\we\\buildtools\\msdosstub.exe /emittoolversioninfo:no")

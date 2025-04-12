@@ -1,7 +1,7 @@
-cmake_minimum_required (VERSION 3.4)
+cmake_minimum_required (VERSION 3.10)
 
-#set(CMAKE_HOST_SYSTEM "Windows-10.0.18362")
-set(CMAKE_HOST_SYSTEM "Windows-10.0.22000")
+set(CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM},version=10.0.22621.0")
+#set(CMAKE_GENERATOR_PLATFORM "${CMAKE_GENERATOR_PLATFORM},version=10.0.26100.0")
 
 #set(CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION "10.0.17763" CACHE STRING INTERNAL FORCE)
 #set(CMAKE_HOST_SYSTEM "Windows-10.0.17763" CACHE STRING INTERNAL FORCE)
@@ -120,7 +120,7 @@ if ("${BITS}" EQUAL "64")
 	add_definitions(-DPLATFORM_X64)
 endif ("${BITS}" EQUAL "64")
 
-set(common_build_flags "/MP32 /arch:SSE2 /std:c++17 /std:c17")
+set(common_build_flags "/MP32 /arch:SSE2 /std:c++17 /std:c11")
 set(common_linker_flags "/LTCG") # /pdbaltpath:%_PDB%")
 
 if(EXISTS "D:/dev/we/buildtools/msdosstub.exe")

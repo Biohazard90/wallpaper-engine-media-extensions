@@ -26,4 +26,10 @@ public:
 	virtual void Pause(SoundHandle handle) = 0;
 	virtual void Stop(SoundHandle handle) = 0;
 	virtual void SetVolume(SoundHandle handle, float volume) = 0;
+
+	virtual int GetChannelCount(SoundHandle handle) = 0;
+	virtual void SetAttenuation(SoundHandle handle, float attenuation) = 0;
+	virtual void SetMinimumDistance(SoundHandle handle, float minDistance) = 0;
+	virtual void SetPosition(SoundHandle handle, float *xyz) = 0;
+	virtual void SetPositions(const uint32_t count, SoundHandle *handles, float *xyz) = 0;
 };

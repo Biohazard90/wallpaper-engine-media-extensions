@@ -10,9 +10,15 @@ namespace
 	std::mutex soundBufferMutex;
 	struct SoundInstance
 	{
+		//enum SoundInstanceFlags
+		//{
+		//	IS_SPATIALIZATION_ACTIVE = (1 << 0),
+		//};
+
 		sf::SoundStream *sound;
 		float duration;
 		sf::Music::Status status;
+		//uint32_t flags = 0;
 	};
 }
 
@@ -199,5 +205,65 @@ void WallpaperEngineMediaExtensions::SetVolume(void *handle, float volume)
 	if (soundInstance->sound != nullptr)
 	{
 		soundInstance->sound->setVolume(100.0f * volume);
+	}
+}
+
+int WallpaperEngineMediaExtensions::GetChannelCount(SoundHandle handle)
+{
+	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	return soundInstance->sound ? soundInstance->sound->getChannelCount() : 0;
+}
+
+void WallpaperEngineMediaExtensions::SetAttenuation(SoundHandle handle, float attenuation)
+{
+	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	if (soundInstance->sound != nullptr)
+	{
+		soundInstance->sound->setAttenuation(attenuation);
+	}
+}
+
+void WallpaperEngineMediaExtensions::SetMinimumDistance(SoundHandle handle, float minDistance)
+{
+	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	if (soundInstance->sound != nullptr)
+	{
+		soundInstance->sound->setMinDistance(minDistance);
+	}
+}
+
+void WallpaperEngineMediaExtensions::SetPosition(SoundHandle handle, float *xyz)
+{
+	WINASSERT(handle != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
+	SoundInstance *soundInstance = (SoundInstance*)handle;
+	if (soundInstance->sound != nullptr)
+	{
+		//if ((soundInstance->flags & SoundInstance::IS_SPATIALIZATION_ACTIVE) == 0)
+		//{
+		//	soundInstance->flags |= SoundInstance::IS_SPATIALIZATION_ACTIVE;
+		//	soundInstance->sound->setRelativeToListener(
+		//}
+		soundInstance->sound->setPosition(xyz[0], xyz[1], xyz[2]);
+	}
+}
+
+void WallpaperEngineMediaExtensions::SetPositions(const uint32_t count, SoundHandle *handles, float *xyz)
+{
+	WINASSERT(handles != nullptr);
+	unique_lock<mutex> lock(soundBufferMutex);
+	for (uint32_t i = 0; i < count; ++i)
+	{
+		SoundInstance *soundInstance = (SoundInstance*)handles[i];
+		if (soundInstance->sound != nullptr)
+		{
+			soundInstance->sound->setPosition(xyz[0], xyz[1], xyz[2]);
+		}
 	}
 }

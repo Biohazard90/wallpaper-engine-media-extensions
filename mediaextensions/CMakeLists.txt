@@ -14,7 +14,7 @@ include_directories("interface")
 include_directories("${OP_SFML2_INC}")
 
 link_directories("${OP_SFML2_LIB}")
-link_directories("${OP_SFML2_EXTERNAL_LIB}")
+#link_directories("${OP_SFML2_EXTERNAL_LIB}")
 
 set(projoutputname "mediaextensions${BITS}")
 
@@ -23,12 +23,25 @@ add_library(${projoutputname} SHARED ${mediaextensions_src})
 target_link_options(${projoutputname} PRIVATE /PDBALTPATH:$<TARGET_PDB_FILE_NAME:${projoutputname}>)
 
 target_link_libraries(${projoutputname} optimized libcmt)
-target_link_libraries(${projoutputname} flac ogg vorbis vorbisfile Shlwapi)
-target_link_libraries(${projoutputname} optimized openal32 debug openal32-d)
+
+#target_link_libraries(${projoutputname} flac ogg vorbis vorbisfile Shlwapi)
+#target_link_libraries(${projoutputname} optimized openal32 debug openal32-d)
+#target_link_libraries(${projoutputname} optimized sfml-system-s debug sfml-system-s-d)
+#target_link_libraries(${projoutputname} optimized sfml-audio-s debug sfml-audio-s-d)
+
+
+target_link_libraries(${projoutputname} Shlwapi)
+target_link_libraries(${projoutputname} optimized flac debug flacd )
+target_link_libraries(${projoutputname} optimized ogg debug oggd)
+target_link_libraries(${projoutputname} optimized vorbis debug vorbisd)
+target_link_libraries(${projoutputname} optimized vorbisenc debug vorbisencd)
+target_link_libraries(${projoutputname} optimized vorbisfile debug vorbisfiled)
+
 target_link_libraries(${projoutputname} optimized sfml-system-s debug sfml-system-s-d)
 target_link_libraries(${projoutputname} optimized sfml-audio-s debug sfml-audio-s-d)
 
-target_link_libraries(${projoutputname} Winmm)
+
+#target_link_libraries(${projoutputname} Winmm)
 
 
 

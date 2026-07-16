@@ -11,6 +11,8 @@ public:
 	virtual void Init() override;
 	virtual void Destroy() override;
 
+	virtual bool SetPlaybackDevice(const char *deviceName) override;
+
 	virtual SoundBufferHandle CreateSoundBuffer(const char *name, const uint8_t *data, uint32_t sizeInBytes) override;
 	virtual void DestroySoundBuffer(SoundBufferHandle handle) override;
 
